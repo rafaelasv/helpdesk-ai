@@ -5,17 +5,17 @@ function App() {
   const [email, setEmail] = useState("")
   const [assunto, setAssunto] = useState("")
   const [mensagem, setMensagem] = useState("")
+  const [tickets, setTickets] = useState([])
 
   function abrirTicket() {
-  const novoTicket = {
-    nome: nome,
-    email: email,
-    assunto: assunto,
-    mensagem: mensagem
+    const novoTicket = {
+      nome: nome,
+      email: email,
+      assunto: assunto,
+      mensagem: mensagem
+    }
+    setTickets([...tickets, novoTicket])
   }
-
-  setTickets([...tickets, novoTicket])
-}
 
   return (
     <div>
@@ -44,12 +44,8 @@ function App() {
           value={mensagem}
           onChange={(e) => setMensagem(e.target.value)}
         />
-
-        const [tickets, setTickets] = useState([])
-
-        <button type="button">Abrir Ticket</button>
+        <button type="button" onClick={abrirTicket}>Abrir Ticket</button>
       </form>
-      
     </div>
   )
 }
