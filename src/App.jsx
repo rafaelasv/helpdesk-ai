@@ -15,6 +15,11 @@ function App() {
       mensagem: mensagem
     }
     setTickets([...tickets, novoTicket])
+
+    setNome("")
+    setEmail("")
+    setAssunto("")
+    setMensagem("")
   }
 
   return (
@@ -46,6 +51,13 @@ function App() {
         />
         <button type="button" onClick={abrirTicket}>Abrir Ticket</button>
       </form>
+
+      <div>
+        {tickets.map((ticket, index) => (
+          <p key={index}>{ticket.assunto}</p>
+        ))}
+      </div>
+
     </div>
   )
 }
