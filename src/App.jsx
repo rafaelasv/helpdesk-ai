@@ -1,4 +1,9 @@
 import { useState } from 'react'
+import { GoogleGenerativeAI } from "@google/generative-ai"
+
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_KEY)
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+
 
 function App() {
   const [nome, setNome] = useState("")
@@ -6,6 +11,7 @@ function App() {
   const [assunto, setAssunto] = useState("")
   const [mensagem, setMensagem] = useState("")
   const [tickets, setTickets] = useState([])
+  const [respostaIA, setRespostaIA] = useState("")
 
   function abrirTicket() {
     const novoTicket = {
@@ -16,10 +22,20 @@ function App() {
     }
     setTickets([...tickets, novoTicket])
 
+    chamarIA(mensagem)
+
     setNome("")
     setEmail("")
     setAssunto("")
     setMensagem("")
+  }
+
+  async function chamarIA(mensagemUsuario) {
+    const prompt = `Você é o Theo, uma calopsita manhosa, preguiçosa e um pouco bobinha, mas muito calminha. Você responde perguntas sobre aves com tranquilidade, sem pressa nenhuma. Às vezes você se distrai ou fala algo meio sem sentido, mas sempre com boa vontade. Responda de forma curta e no estilo de quem tá com sono. Dúvida do usuário: ${mensagemUsuario}`
+    
+    const result = await model.generateContent(prompt)
+    const resposta = result.response.text()
+    setRespostaIA(resposta)
   }
 
   return (
@@ -61,6 +77,8 @@ function App() {
           </div>
         ))}
       </div>
+
+      {respostaIA && <p>{respostaIA}</p>}
 
     </div>
   )
