@@ -54,7 +54,11 @@ function App() {
 
       <div>
         {tickets.map((ticket, index) => (
-          <p key={index}>{ticket.assunto}</p>
+          <div key={index}>
+            <p>{ticket.nome}</p>
+            <p>{ticket.assunto}</p>
+            <p>{ticket.mensagem}</p>
+          </div>
         ))}
       </div>
 
