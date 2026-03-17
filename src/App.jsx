@@ -39,47 +39,37 @@ function App() {
   }
 
   return (
-    <div>
-      <h1>Help Desk</h1>
-      <form>
-        <input 
-          type="text" 
-          placeholder="Seu nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input 
-          type="email" 
-          placeholder="Seu email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input 
-          type="text" 
-          placeholder="Assunto"
-          value={assunto}
-          onChange={(e) => setAssunto(e.target.value)}
-        />
-        <textarea 
-          placeholder="Descreva seu problema"
-          value={mensagem}
-          onChange={(e) => setMensagem(e.target.value)}
-        />
-        <button type="button" onClick={abrirTicket}>Abrir Ticket</button>
-      </form>
+    <div className="container">
+      <header className="header">
+        <h1>🐦 Theo Help Desk</h1>
+        <p>Dúvidas sobre sua ave? O Theo responde!</p>
+      </header>
 
-      <div>
-        {tickets.map((ticket, index) => (
-          <div key={index}>
-            <p>{ticket.nome}</p>
-            <p>{ticket.assunto}</p>
-            <p>{ticket.mensagem}</p>
+      <main className="main">
+        <div className="form-card">
+          <h2>Abrir chamado</h2>
+          <div className="form-grid">
+            <input type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+            <input type="email" placeholder="Seu email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
-        ))}
-      </div>
+          <input type="text" placeholder="Assunto" value={assunto} onChange={(e) => setAssunto(e.target.value)} />
+          <textarea rows={4} placeholder="Descreva seu problema" value={mensagem} onChange={(e) => setMensagem(e.target.value)} />
+          <button type="button" onClick={abrirTicket}>Abrir Ticket 🌿</button>
+        </div>
 
-      {respostaIA && <p>{respostaIA}</p>}
-
+        <div className="tickets">
+          {tickets.map((ticket, index) => (
+            <div key={index} className="ticket-card">
+              <div className="ticket-header">
+                <span className="ticket-nome">{ticket.nome}</span>
+                <span className="ticket-assunto">{ticket.assunto}</span>
+              </div>
+              <p className="ticket-mensagem">{ticket.mensagem}</p>
+              {respostaIA && <div className="resposta-ia">🐦 <strong>Theo:</strong> {respostaIA}</div>}
+            </div>
+          ))}
+        </div>
+      </main>
     </div>
   )
 }
