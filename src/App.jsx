@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import { GoogleGenerativeAI } from "@google/generative-ai"
 import { Routes, Route, Link } from 'react-router-dom'
 import Artigos from './Artigos'
-
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+import Revisao from './Revisao'
 
 
 function App() {
@@ -33,38 +30,13 @@ function App() {
   }
 
   async function chamarIA(mensagemUsuario) {
-    // 1. Busca na base de conhecimento
-    const res = await fetch(`http://127.0.0.1:5000/buscar?q=${mensagemUsuario}`)
-    const artigos = await res.json()
-
-    let contexto = ""
-    if (artigos.length > 0) {
-      contexto = `Artigos encontrados na base de conhecimento:\n` +
-        artigos.map(a => `Pergunta: ${a.pergunta}\nResposta: ${a.resposta}`).join("\n\n")
-    }
-
-    // 2. Manda pro Gemini com ou sem contexto
-    const prompt = `Você é o Theo, uma calopsita manhosa, preguiçosa e um pouco bobinha, mas muito calminha. Você responde perguntas sobre aves com tranquilidade, sem pressa nenhuma. Às vezes você se distrai ou fala algo meio sem sentido, mas sempre com boa vontade. Responda de forma curta e no estilo de quem tá com sono.
-
-  ${contexto ? `Use esses artigos como referência se forem relevantes:\n${contexto}\n\n` : ""}
-
-  Dúvida do usuário: ${mensagemUsuario}`
-
-    const result = await model.generateContent(prompt)
-    const resposta = result.response.text()
-    setRespostaIA(resposta)
-
-    // 3. Se não tinha artigo, salva um novo
-    if (artigos.length === 0) {
-      await fetch("http://127.0.0.1:5000/artigos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pergunta: mensagemUsuario,
-          resposta: resposta
-        })
-      })
-    }
+    const res = await fetch("http://127.0.0.1:5000/responder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mensagem: mensagemUsuario })
+    })
+    const dados = await res.json()
+    setRespostaIA(dados.resposta)
   }
 
   return (
@@ -72,6 +44,7 @@ function App() {
       <nav className="nav">
         <Link to="/">🐦 Help Desk</Link>
         <Link to="/artigos">📚 Base de Conhecimento</Link>
+        <Link to="/revisao">✏️ Revisão</Link>
       </nav>
 
       <Routes>
@@ -108,6 +81,7 @@ function App() {
           </div>
         } />
         <Route path="/artigos" element={<Artigos />} />
+        <Route path="/revisao" element={<Revisao />} />
       </Routes>
     </div>
   )

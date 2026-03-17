@@ -1,8 +1,14 @@
- 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
 import os
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
+
+genai.configure(api_key=os.getenv("GEMINI_KEY"))
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +27,8 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 pergunta TEXT NOT NULL,
                 resposta TEXT NOT NULL,
+                categoria TEXT DEFAULT 'Geral',
+                status TEXT DEFAULT 'pendente',
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -51,21 +59,89 @@ def artigos():
         dados = request.json
         with get_conn() as conn:
             conn.execute(
-                "INSERT INTO artigos (pergunta, resposta) VALUES (?, ?)",
-                (dados["pergunta"], dados["resposta"])
+                "INSERT INTO artigos (pergunta, resposta, categoria, status) VALUES (?, ?, ?, ?)",
+                (dados["pergunta"], dados["resposta"], dados.get("categoria", "Geral"), "pendente")
             )
             conn.commit()
         return jsonify({"ok": True})
     
     else:
         with get_conn() as conn:
-            todos = conn.execute("SELECT * FROM artigos ORDER BY criado_em DESC").fetchall()
+            todos = conn.execute(
+                "SELECT * FROM artigos WHERE status = 'oficial' ORDER BY criado_em DESC"
+            ).fetchall()
         return jsonify([{
             "id": artigo["id"],
             "pergunta": artigo["pergunta"],
             "resposta": artigo["resposta"],
+            "categoria": artigo["categoria"],
             "criado_em": artigo["criado_em"]
         } for artigo in todos])
+
+@app.route("/revisao", methods=["GET"])
+def revisao():
+    with get_conn() as conn:
+        pendentes = conn.execute(
+            "SELECT * FROM artigos WHERE status = 'pendente' ORDER BY criado_em DESC"
+        ).fetchall()
+    return jsonify([{
+        "id": artigo["id"],
+        "pergunta": artigo["pergunta"],
+        "resposta": artigo["resposta"],
+        "categoria": artigo["categoria"],
+        "criado_em": artigo["criado_em"]
+    } for artigo in pendentes])
+
+@app.route("/artigos/<int:id>/aprovar", methods=["POST"])
+def aprovar(id):
+    dados = request.json
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE artigos SET status = 'oficial', resposta = ?, categoria = ? WHERE id = ?",
+            (dados["resposta"], dados["categoria"], id)
+        )
+        conn.commit()
+    return jsonify({"ok": True})
+
+@app.route("/responder", methods=["POST"])
+def responder():
+    dados = request.json
+    mensagem = dados["mensagem"]
+
+    # 1. Busca na base de conhecimento
+    with get_conn() as conn:
+        artigos = conn.execute("SELECT * FROM artigos WHERE status = 'oficial'").fetchall()
+    
+    contexto = ""
+    relevantes = [a for a in artigos if any(p in a["pergunta"].lower() for p in mensagem.lower().split())]
+    
+    if relevantes:
+        contexto = "Artigos encontrados na base de conhecimento:\n" + \
+            "\n\n".join([f"Pergunta: {a['pergunta']}\nResposta: {a['resposta']}" for a in relevantes])
+
+    # 2. Chama o Gemini
+    prompt = f"""Você é o Theo, uma calopsita manhosa, preguiçosa e um pouco bobinha, mas muito calminha. 
+Você responde perguntas sobre aves com tranquilidade, sem pressa nenhuma. 
+Às vezes você se distrai ou fala algo meio sem sentido, mas sempre com boa vontade. 
+Responda de forma curta e no estilo de quem tá com sono.
+
+{f'Use esses artigos como referência se forem relevantes:{contexto}' if contexto else ''}
+
+Dúvida do usuário: {mensagem}"""
+
+    result = model.generate_content(prompt)
+    resposta = result.text
+
+    # 3. Se não tinha artigo relevante, salva como pendente
+    if not relevantes:
+        with get_conn() as conn:
+            conn.execute(
+                "INSERT INTO artigos (pergunta, resposta, status) VALUES (?, ?, ?)",
+                (mensagem, resposta, "pendente")
+            )
+            conn.commit()
+
+    return jsonify({"resposta": resposta})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
