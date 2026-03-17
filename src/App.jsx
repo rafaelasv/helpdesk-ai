@@ -31,11 +31,38 @@ function App() {
   }
 
   async function chamarIA(mensagemUsuario) {
-    const prompt = `Você é o Theo, uma calopsita manhosa, preguiçosa e um pouco bobinha, mas muito calminha. Você responde perguntas sobre aves com tranquilidade, sem pressa nenhuma. Às vezes você se distrai ou fala algo meio sem sentido, mas sempre com boa vontade. Responda de forma curta e no estilo de quem tá com sono. Dúvida do usuário: ${mensagemUsuario}`
-    
+    // 1. Busca na base de conhecimento
+    const res = await fetch(`http://127.0.0.1:5000/buscar?q=${mensagemUsuario}`)
+    const artigos = await res.json()
+
+    let contexto = ""
+    if (artigos.length > 0) {
+      contexto = `Artigos encontrados na base de conhecimento:\n` +
+        artigos.map(a => `Pergunta: ${a.pergunta}\nResposta: ${a.resposta}`).join("\n\n")
+    }
+
+    // 2. Manda pro Gemini com ou sem contexto
+    const prompt = `Você é o Theo, uma calopsita manhosa, preguiçosa e um pouco bobinha, mas muito calminha. Você responde perguntas sobre aves com tranquilidade, sem pressa nenhuma. Às vezes você se distrai ou fala algo meio sem sentido, mas sempre com boa vontade. Responda de forma curta e no estilo de quem tá com sono.
+
+  ${contexto ? `Use esses artigos como referência se forem relevantes:\n${contexto}\n\n` : ""}
+
+  Dúvida do usuário: ${mensagemUsuario}`
+
     const result = await model.generateContent(prompt)
     const resposta = result.response.text()
     setRespostaIA(resposta)
+
+    // 3. Se não tinha artigo, salva um novo
+    if (artigos.length === 0) {
+      await fetch("http://127.0.0.1:5000/artigos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pergunta: mensagemUsuario,
+          resposta: resposta
+        })
+      })
+    }
   }
 
   return (
