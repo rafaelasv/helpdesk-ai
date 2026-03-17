@@ -45,16 +45,27 @@ def buscar():
     
     return jsonify(resultados)
 
-@app.route("/artigos", methods=["POST"])
-def criar_artigo():
-    dados = request.json
-    with get_conn() as conn:
-        conn.execute(
-            "INSERT INTO artigos (pergunta, resposta) VALUES (?, ?)",
-            (dados["pergunta"], dados["resposta"])
-        )
-        conn.commit()
-    return jsonify({"ok": True})
+@app.route("/artigos", methods=["GET", "POST"])
+def artigos():
+    if request.method == "POST":
+        dados = request.json
+        with get_conn() as conn:
+            conn.execute(
+                "INSERT INTO artigos (pergunta, resposta) VALUES (?, ?)",
+                (dados["pergunta"], dados["resposta"])
+            )
+            conn.commit()
+        return jsonify({"ok": True})
+    
+    else:
+        with get_conn() as conn:
+            todos = conn.execute("SELECT * FROM artigos ORDER BY criado_em DESC").fetchall()
+        return jsonify([{
+            "id": artigo["id"],
+            "pergunta": artigo["pergunta"],
+            "resposta": artigo["resposta"],
+            "criado_em": artigo["criado_em"]
+        } for artigo in todos])
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

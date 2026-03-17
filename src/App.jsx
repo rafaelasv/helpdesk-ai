@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { Routes, Route, Link } from 'react-router-dom'
+import Artigos from './Artigos'
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_KEY)
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
@@ -66,37 +68,47 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <header className="header">
-        <h1>🐦 Theo Help Desk</h1>
-        <p>Dúvidas sobre sua ave? O Theo responde!</p>
-      </header>
+    <div>
+      <nav className="nav">
+        <Link to="/">🐦 Help Desk</Link>
+        <Link to="/artigos">📚 Base de Conhecimento</Link>
+      </nav>
 
-      <main className="main">
-        <div className="form-card">
-          <h2>Abrir chamado</h2>
-          <div className="form-grid">
-            <input type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-            <input type="email" placeholder="Seu email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <input type="text" placeholder="Assunto" value={assunto} onChange={(e) => setAssunto(e.target.value)} />
-          <textarea rows={4} placeholder="Descreva seu problema" value={mensagem} onChange={(e) => setMensagem(e.target.value)} />
-          <button type="button" onClick={abrirTicket}>Abrir Ticket 🌿</button>
-        </div>
-
-        <div className="tickets">
-          {tickets.map((ticket, index) => (
-            <div key={index} className="ticket-card">
-              <div className="ticket-header">
-                <span className="ticket-nome">{ticket.nome}</span>
-                <span className="ticket-assunto">{ticket.assunto}</span>
+      <Routes>
+        <Route path="/" element={
+          <div className="container">
+            <header className="header">
+              <h1>🐦 Theo Help Desk</h1>
+              <p>Dúvidas sobre sua ave? O Theo responde!</p>
+            </header>
+            <main className="main">
+              <div className="form-card">
+                <h2>Abrir chamado</h2>
+                <div className="form-grid">
+                  <input type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+                  <input type="email" placeholder="Seu email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+                <input type="text" placeholder="Assunto" value={assunto} onChange={(e) => setAssunto(e.target.value)} />
+                <textarea rows={4} placeholder="Descreva seu problema" value={mensagem} onChange={(e) => setMensagem(e.target.value)} />
+                <button type="button" onClick={abrirTicket}>Abrir Ticket 🌿</button>
               </div>
-              <p className="ticket-mensagem">{ticket.mensagem}</p>
-              {respostaIA && <div className="resposta-ia">🐦 <strong>Theo:</strong> {respostaIA}</div>}
-            </div>
-          ))}
-        </div>
-      </main>
+              <div className="tickets">
+                {tickets.map((ticket, index) => (
+                  <div key={index} className="ticket-card">
+                    <div className="ticket-header">
+                      <span className="ticket-nome">{ticket.nome}</span>
+                      <span className="ticket-assunto">{ticket.assunto}</span>
+                    </div>
+                    <p className="ticket-mensagem">{ticket.mensagem}</p>
+                    {respostaIA && <div className="resposta-ia">🐦 <strong>Theo:</strong> {respostaIA}</div>}
+                  </div>
+                ))}
+              </div>
+            </main>
+          </div>
+        } />
+        <Route path="/artigos" element={<Artigos />} />
+      </Routes>
     </div>
   )
 }
