@@ -11,6 +11,7 @@ function App() {
   const [mensagem, setMensagem] = useState("")
   const [tickets, setTickets] = useState([])
   const [respostaIA, setRespostaIA] = useState("")
+  const [carregando, setCarregando] = useState(false)
 
   function abrirTicket() {
     const novoTicket = {
@@ -30,6 +31,7 @@ function App() {
   }
 
   async function chamarIA(mensagemUsuario) {
+    setCarregando(true)
     const res = await fetch("http://127.0.0.1:5000/responder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -37,6 +39,7 @@ function App() {
     })
     const dados = await res.json()
     setRespostaIA(dados.resposta)
+    setCarregando(false)
   }
 
   return (

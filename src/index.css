@@ -133,3 +133,13 @@ button:hover {
   font-size: 0.95rem;
   line-height: 1.6;
 }
+
+.digitando {
+  display: inline-block;
+  animation: piscar 1.2s infinite;
+}
+
+@keyframes piscar {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
