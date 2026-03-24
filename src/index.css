@@ -143,3 +143,142 @@ button:hover {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+
+/*Nav */
+.nav {
+  display: flex;
+  gap: 24px;
+  padding: 16px 32px;
+  background: #f5d97a;
+  border-bottom: 3px solid #e8c94a;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #7a5c2e;
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+}
+
+.nav a:hover {
+  color: #d4831a;
+}
+
+/* Home — categorias */
+.categorias-titulo {
+  font-family: 'Caveat', cursive;
+  color: #d4831a;
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.categoria-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: #fffdf7;
+  border: 2px solid #e8d9b5;
+  border-radius: 24px;
+  padding: 32px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.1s;
+  font-family: 'Nunito', sans-serif;
+  color: #5a4a3a;
+  align-self: unset;
+  padding: 32px 16px;
+}
+
+.categoria-card:hover {
+  border-color: #d4831a;
+  transform: translateY(-2px);
+  background-color: #fffdf7;
+}
+
+.categoria-emoji {
+  font-size: 2.4rem;
+}
+
+.categoria-nome {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Chat */
+.chat-container {
+  background: #fffdf7;
+  border: 2px solid #e8d9b5;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 520px;
+}
+
+.chat-mensagens {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.chat-msg-user {
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.chat-balao {
+  max-width: 72%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.chat-msg-theo .chat-balao {
+  background: #f0ede4;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg-user .chat-balao {
+  background: #d4831a;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 2px solid #e8d9b5;
+  align-items: flex-end;
+}
+
+.chat-input-area textarea {
+  flex: 1;
+  resize: none;
+  border-radius: 16px;
+}
+
+.chat-input-area button {
+  flex-shrink: 0;
+  padding: 10px 24px;
+}

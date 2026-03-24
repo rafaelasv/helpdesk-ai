@@ -1,47 +1,10 @@
-import { useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
+import Home from './Home'
+import Chat from './Chat'
 import Artigos from './Artigos'
 import Revisao from './Revisao'
 
-
 function App() {
-  const [nome, setNome] = useState("")
-  const [email, setEmail] = useState("")
-  const [assunto, setAssunto] = useState("")
-  const [mensagem, setMensagem] = useState("")
-  const [tickets, setTickets] = useState([])
-
-  async function abrirTicket() {
-    const indice = tickets.length
-    const novoTicket = {
-      nome,
-      email,
-      assunto,
-      mensagem,
-      resposta: null,
-      carregando: true
-    }
-    setTickets(prev => [...prev, novoTicket])
-
-    setNome("")
-    setEmail("")
-    setAssunto("")
-    setMensagem("")
-
-    const res = await fetch("http://127.0.0.1:5000/responder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mensagem: novoTicket.mensagem })
-    })
-    const dados = await res.json()
-
-    setTickets(prev =>
-      prev.map((t, i) =>
-        i === indice ? { ...t, resposta: dados.resposta, carregando: false } : t
-      )
-    )
-  }
-
   return (
     <div>
       <nav className="nav">
@@ -51,47 +14,8 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={
-          <div className="container">
-            <header className="header">
-              <h1>🐦 Theo Help Desk</h1>
-              <p>Dúvidas sobre sua ave? O Theo responde!</p>
-            </header>
-            <main className="main">
-              <div className="form-card">
-                <h2>Abrir chamado</h2>
-                <div className="form-grid">
-                  <input type="text" placeholder="Seu nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-                  <input type="email" placeholder="Seu email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
-                <input type="text" placeholder="Assunto" value={assunto} onChange={(e) => setAssunto(e.target.value)} />
-                <textarea rows={4} placeholder="Descreva seu problema" value={mensagem} onChange={(e) => setMensagem(e.target.value)} />
-                <button type="button" onClick={abrirTicket}>Abrir Ticket 🌿</button>
-              </div>
-              <div className="tickets">
-                {tickets.map((ticket, index) => (
-                  <div key={index} className="ticket-card">
-                    <div className="ticket-header">
-                      <span className="ticket-nome">{ticket.nome}</span>
-                      <span className="ticket-assunto">{ticket.assunto}</span>
-                    </div>
-                    <p className="ticket-mensagem">{ticket.mensagem}</p>
-                    {ticket.carregando && (
-                      <div className="resposta-ia">
-                        🐦 <strong>Theo:</strong> <span className="digitando">...</span>
-                      </div>
-                    )}
-                    {!ticket.carregando && ticket.resposta && (
-                      <div className="resposta-ia">
-                        🐦 <strong>Theo:</strong> {ticket.resposta}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </main>
-          </div>
-        } />
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/artigos" element={<Artigos />} />
         <Route path="/revisao" element={<Revisao />} />
       </Routes>
