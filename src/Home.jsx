@@ -12,8 +12,8 @@ const categorias = [
 function Home() {
   const navigate = useNavigate()
 
-  function irParaChat(mensagem) {
-    navigate('/chat', { state: { mensagemInicial: mensagem } })
+  function irParaChat(cat) {
+    navigate(`/categoria/${encodeURIComponent(cat.titulo)}`)
   }
 
   return (
@@ -29,7 +29,7 @@ function Home() {
             <button
               key={cat.titulo}
               className="categoria-card"
-              onClick={() => irParaChat(cat.mensagem)}
+              onClick={() => irParaChat(cat)}
             >
               <span className="categoria-emoji">{cat.emoji}</span>
               <span className="categoria-nome">{cat.titulo}</span>

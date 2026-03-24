@@ -66,10 +66,17 @@ def artigos():
         return jsonify({"ok": True})
     
     else:
+        categoria = request.args.get("categoria")
         with get_conn() as conn:
-            todos = conn.execute(
-                "SELECT * FROM artigos WHERE status = 'oficial' ORDER BY criado_em DESC"
-            ).fetchall()
+            if categoria:
+                todos = conn.execute(
+                    "SELECT * FROM artigos WHERE status = 'oficial' AND categoria = ? ORDER BY criado_em DESC",
+                    (categoria,)
+                ).fetchall()
+            else:
+                todos = conn.execute(
+                    "SELECT * FROM artigos WHERE status = 'oficial' ORDER BY criado_em DESC"
+                ).fetchall()
         return jsonify([{
             "id": artigo["id"],
             "pergunta": artigo["pergunta"],

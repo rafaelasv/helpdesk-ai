@@ -4,6 +4,7 @@ import Chat from './Chat'
 import Artigos from './Artigos'
 import Revisao from './Revisao'
 import NovoArtigo from './NovoArtigo'
+import Categoria from './Categoria'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/categoria/:nome" element={<Categoria />} />
         <Route path="/artigos" element={<Artigos />} />
         <Route path="/novo-artigo" element={<NovoArtigo />} />
         <Route path="/revisao" element={<Revisao />} />

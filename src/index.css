@@ -283,6 +283,83 @@ button:hover {
   padding: 10px 24px;
 }
 
+/* Página de categoria */
+.container-larga {
+  max-width: 1100px;
+}
+
+.categoria-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.artigos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.artigo-item {
+  background: #fffdf7;
+  border: 2px solid #e8d9b5;
+  border-radius: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.artigo-item:hover,
+.artigo-item.aberto {
+  border-color: #d4831a;
+}
+
+.artigo-pergunta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: #5a4a3a;
+}
+
+.artigo-seta {
+  font-size: 0.75rem;
+  color: #d4831a;
+  flex-shrink: 0;
+}
+
+.artigo-resposta {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e8d9b5;
+  color: #7a5c2e;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.sem-artigos {
+  color: #a08060;
+  font-style: italic;
+  text-align: center;
+  padding: 24px;
+}
+
+.chat-lateral {
+  position: sticky;
+  top: 20px;
+}
+
+@media (max-width: 700px) {
+  .categoria-layout {
+    grid-template-columns: 1fr;
+  }
+  .chat-lateral {
+    position: static;
+  }
+}
+
 /* Novo Artigo */
 .form-field {
   display: flex;
