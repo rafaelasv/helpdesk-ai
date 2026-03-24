@@ -10,36 +10,36 @@ function App() {
   const [assunto, setAssunto] = useState("")
   const [mensagem, setMensagem] = useState("")
   const [tickets, setTickets] = useState([])
-  const [respostaIA, setRespostaIA] = useState("")
-  const [carregando, setCarregando] = useState(false)
 
-  function abrirTicket() {
+  async function abrirTicket() {
+    const indice = tickets.length
     const novoTicket = {
-      nome: nome,
-      email: email,
-      assunto: assunto,
-      mensagem: mensagem
+      nome,
+      email,
+      assunto,
+      mensagem,
+      resposta: null,
+      carregando: true
     }
-    setTickets([...tickets, novoTicket])
-
-    chamarIA(mensagem)
+    setTickets(prev => [...prev, novoTicket])
 
     setNome("")
     setEmail("")
     setAssunto("")
     setMensagem("")
-  }
 
-  async function chamarIA(mensagemUsuario) {
-    setCarregando(true)
     const res = await fetch("http://127.0.0.1:5000/responder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mensagem: mensagemUsuario })
+      body: JSON.stringify({ mensagem: novoTicket.mensagem })
     })
     const dados = await res.json()
-    setRespostaIA(dados.resposta)
-    setCarregando(false)
+
+    setTickets(prev =>
+      prev.map((t, i) =>
+        i === indice ? { ...t, resposta: dados.resposta, carregando: false } : t
+      )
+    )
   }
 
   return (
@@ -76,7 +76,16 @@ function App() {
                       <span className="ticket-assunto">{ticket.assunto}</span>
                     </div>
                     <p className="ticket-mensagem">{ticket.mensagem}</p>
-                    {respostaIA && <div className="resposta-ia">🐦 <strong>Theo:</strong> {respostaIA}</div>}
+                    {ticket.carregando && (
+                      <div className="resposta-ia">
+                        🐦 <strong>Theo:</strong> <span className="digitando">...</span>
+                      </div>
+                    )}
+                    {!ticket.carregando && ticket.resposta && (
+                      <div className="resposta-ia">
+                        🐦 <strong>Theo:</strong> {ticket.resposta}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
