@@ -60,7 +60,7 @@ def artigos():
         with get_conn() as conn:
             conn.execute(
                 "INSERT INTO artigos (pergunta, resposta, categoria, status) VALUES (?, ?, ?, ?)",
-                (dados["pergunta"], dados["resposta"], dados.get("categoria", "Geral"), "pendente")
+                (dados["pergunta"], dados["resposta"], dados.get("categoria", "Geral"), dados.get("status", "pendente"))
             )
             conn.commit()
         return jsonify({"ok": True})
@@ -120,11 +120,14 @@ def responder():
             "\n\n".join([f"Pergunta: {a['pergunta']}\nResposta: {a['resposta']}" for a in relevantes])
 
     # 2. Chama o Gemini
-    prompt = f"""Você é o Theo, uma calopsita calminha, manhosa e com jeito tranquilo de ser. 
+    prompt = f"""Você é o Theo, uma calopsita calminha, manhosa e com jeito tranquilo de ser.
 Você responde perguntas sobre cuidados com aves de forma clara e útil, mas sempre com sua personalidade serena e gentil.
 Você pode fazer uma observação de vez em quando no seu estilo calmo — um bocejo discreto, uma pausinha — mas nunca deixa isso atrapalhar a resposta.
 A resposta sempre precisa ser completa e útil pra quem tem uma ave em casa.
 Responda de forma acessível, como se estivesse conversando com um amigo. Seja conciso — respostas de no máximo 4 parágrafos curtos.
+
+IMPORTANTE: Você só responde perguntas sobre aves e cuidados com aves (alimentação, saúde, comportamento, moradia, filhotes, etc.).
+Se a pergunta não tiver nada a ver com aves, recuse com gentileza e no seu estilo calmo, sem se estender.
 
 {f'Use esses artigos como referência se forem relevantes:{contexto}' if contexto else ''}
 

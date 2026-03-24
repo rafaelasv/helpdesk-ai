@@ -3,6 +3,7 @@ import Home from './Home'
 import Chat from './Chat'
 import Artigos from './Artigos'
 import Revisao from './Revisao'
+import NovoArtigo from './NovoArtigo'
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <nav className="nav">
         <Link to="/">🐦 Help Desk</Link>
         <Link to="/artigos">📚 Base de Conhecimento</Link>
+        <Link to="/novo-artigo">📝 Novo Artigo</Link>
         <Link to="/revisao">✏️ Revisão</Link>
       </nav>
 
@@ -17,6 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/artigos" element={<Artigos />} />
+        <Route path="/novo-artigo" element={<NovoArtigo />} />
         <Route path="/revisao" element={<Revisao />} />
       </Routes>
     </div>
